@@ -1,5 +1,7 @@
+import TodoPage from '../pages/TodoPage'
+
 const App = () => {
-  return <div></div>
+  return <TodoPage />
 }
 
 export default App
