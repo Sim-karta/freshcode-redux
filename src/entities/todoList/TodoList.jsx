@@ -2,23 +2,8 @@ import { useState } from 'react'
 import classNames from 'classnames'
 import styles from './Todolist.module.scss'
 
-const initialTasks = [
-  {
-    id: '1',
-    body: 'Вивчити основи Redux Toolkit',
-    isDone: false,
-    deadline: '2026-11-01'
-  },
-  {
-    id: '2',
-    body: 'Підключити Formik та Yup до форми',
-    isDone: true,
-    deadline: '2026-10-20'
-  }
-]
-
 const TodoList = () => {
-  const [tasks, setTasks] = useState(initialTasks)
+  const [tasks, setTasks] = useState([])
 
   const handleDelete = id => {
     setTasks(prev => prev.filter(task => task.id !== id))
