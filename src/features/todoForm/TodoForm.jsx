@@ -1,7 +1,10 @@
 import classNames from 'classnames'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as yup from 'yup'
+import { v4 as uuidv4 } from 'uuid'
 import styles from './TodoForm.module.scss'
+import { connect } from 'react-redux'
+import { addTask } from '../../entities/task/model/tasksSlice'
 
 const TaskSchema = yup.object().shape({
   body: yup
@@ -12,16 +15,9 @@ const TaskSchema = yup.object().shape({
   deadline: yup.date().required('Вкажіть дедлайн')
 })
 
-const TodoForm = () => {
-  const handleSubmit = (values, { resetForm }) => {
-    const newTask = {
-      id: crypto.randomUUID(),
-      body: values.body,
-      isDone: false,
-      deadline: values.deadline
-    }
-
-    setTasks(prev => [...prev, newTask])
+const TodoForm = ({ addNewTask }) => {
+  const handleSubmit = ({ body, deadline }, { resetForm }) => {
+    addNewTask({ body, deadline })
     resetForm()
   }
 
@@ -77,4 +73,8 @@ const TodoForm = () => {
   )
 }
 
-export default TodoForm
+const mapDispatchToProps = dispatch => ({
+  addNewTask: task => dispatch(addTask(task))
+})
+
+export default connect(null, mapDispatchToProps)(TodoForm)

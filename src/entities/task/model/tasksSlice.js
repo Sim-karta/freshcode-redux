@@ -22,6 +22,12 @@ const tasksSLice = createSlice({
   initialState,
   name: 'tasks',
   reducers: {
+    addTask: (state, { payload }) => {
+      state.tasks = [
+        ...state.tasks,
+        { id: uuidv4(), isDone: false, ...payload }
+      ]
+    },
     deleteTask: (state, { payload }) => {
       state.tasks = state.tasks.filter(task => task.id !== payload)
     },
@@ -34,6 +40,6 @@ const tasksSLice = createSlice({
 
 const { reducer, actions } = tasksSLice
 
-export const { deleteTask, updateTask } = actions
+export const { addTask, deleteTask, updateTask } = actions
 
 export default reducer
