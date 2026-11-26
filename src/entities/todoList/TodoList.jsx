@@ -1,10 +1,8 @@
-import { useState } from 'react'
 import classNames from 'classnames'
+import { connect } from 'react-redux'
 import styles from './Todolist.module.scss'
 
-const TodoList = () => {
-  const [tasks, setTasks] = useState([])
-
+const TodoList = ({ tasks }) => {
   const handleDelete = id => {
     setTasks(prev => prev.filter(task => task.id !== id))
   }
@@ -66,4 +64,6 @@ const TodoList = () => {
   )
 }
 
-export default TodoList
+const mapStateToProps = ({ tasksList }) => tasksList
+
+export default connect(mapStateToProps)(TodoList)
