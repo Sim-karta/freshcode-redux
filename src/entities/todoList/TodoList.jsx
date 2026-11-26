@@ -1,36 +1,12 @@
 import { useState } from 'react'
 import classNames from 'classnames'
-import styles from './Todolist.module.scss'
+import { connect } from 'react-redux'
+import styles from './TodoList.module.scss'
+import { deleteTask, updateTask } from '../task/model/tasksSlice'
 
-const initialTasks = [
-  {
-    id: '1',
-    body: 'Вивчити основи Redux Toolkit',
-    isDone: false,
-    deadline: '2026-11-01'
-  },
-  {
-    id: '2',
-    body: 'Підключити Formik та Yup до форми',
-    isDone: true,
-    deadline: '2026-10-20'
-  }
-]
-
-const TodoList = () => {
-  const [tasks, setTasks] = useState(initialTasks)
-
-  const handleDelete = id => {
-    setTasks(prev => prev.filter(task => task.id !== id))
-  }
-
-  const handleToggle = id => {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === id ? { ...task, isDone: !task.isDone } : task
-      )
-    )
-  }
+const TodoList = ({ tasks, deleteTaskById, updateTaskById }) => {
+  const [editingId, setEditingId] = useState(null)
+  const [newBody, setNewBody] = useState('')
 
   const isOverdue = (deadline, isDone) => {
     if (isDone) {
@@ -62,15 +38,48 @@ const TodoList = () => {
                 type='checkbox'
                 className={styles.checkbox}
                 checked={task.isDone}
-                onChange={() => handleToggle(task.id)}
+                onChange={({ target }) =>
+                  updateTaskById(task.id, { isDone: target.checked })
+                }
               />
-              <span className={bodyClassNames}>{task.body}</span>
+              {editingId !== task.id ? (
+                <span
+                  className={bodyClassNames}
+                  onClick={() => {
+                    setNewBody(task.body)
+                    setEditingId(task.id)
+                  }}
+                >
+                  {task.body}
+                </span>
+              ) : (
+                <input
+                  className={styles.taskInput}
+                  type='text'
+                  value={newBody}
+                  onChange={({ target }) => {
+                    setNewBody(target.value)
+                  }}
+                  onBlur={() => {
+                    updateTaskById(task.id, { body: newBody })
+                    setEditingId(null)
+                  }}
+                  onKeyDown={({ key }) => {
+                    if (key === 'Enter') {
+                      updateTaskById(task.id, { body: newBody })
+                      setEditingId(null)
+                    }
+                  }}
+                  autoFocus
+                />
+              )}
+
               <span className={deadlineClassNames}>({task.deadline})</span>
             </div>
 
             <button
               className={styles.deleteBtn}
-              onClick={() => handleDelete(task.id)}
+              onClick={() => deleteTaskById(task.id)}
             >
               Видалити
             </button>
@@ -81,4 +90,11 @@ const TodoList = () => {
   )
 }
 
-export default TodoList
+const mapStateToProps = ({ tasksList }) => tasksList
+
+const mapDispatchToProps = dispatch => ({
+  deleteTaskById: id => dispatch(deleteTask(id)),
+  updateTaskById: (id, body) => dispatch(updateTask({ id, body }))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoList)
