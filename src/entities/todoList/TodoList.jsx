@@ -1,10 +1,13 @@
+import { useState } from 'react'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
-
-import styles from './Todolist.module.scss'
+import styles from './TodoList.module.scss'
 import { deleteTask, updateTask } from '../task/model/tasksSlice'
 
 const TodoList = ({ tasks, deleteTaskById, updateTaskById }) => {
+  const [editingId, setEditingId] = useState(null)
+  const [newBody, setNewBody] = useState('')
+
   const isOverdue = (deadline, isDone) => {
     if (isDone) {
       return false
@@ -39,7 +42,38 @@ const TodoList = ({ tasks, deleteTaskById, updateTaskById }) => {
                   updateTaskById(task.id, { isDone: target.checked })
                 }
               />
-              <span className={bodyClassNames}>{task.body}</span>
+              {editingId !== task.id ? (
+                <span
+                  className={bodyClassNames}
+                  onClick={() => {
+                    setNewBody(task.body)
+                    setEditingId(task.id)
+                  }}
+                >
+                  {task.body}
+                </span>
+              ) : (
+                <input
+                  className={styles.taskInput}
+                  type='text'
+                  value={newBody}
+                  onChange={({ target }) => {
+                    setNewBody(target.value)
+                  }}
+                  onBlur={() => {
+                    updateTaskById(task.id, { body: newBody })
+                    setEditingId(null)
+                  }}
+                  onKeyDown={({ key }) => {
+                    if (key === 'Enter') {
+                      updateTaskById(task.id, { body: newBody })
+                      setEditingId(null)
+                    }
+                  }}
+                  autoFocus
+                />
+              )}
+
               <span className={deadlineClassNames}>({task.deadline})</span>
             </div>
 

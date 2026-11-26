@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as yup from 'yup'
-import { v4 as uuidv4 } from 'uuid'
 import styles from './TodoForm.module.scss'
 import { connect } from 'react-redux'
 import { addTask } from '../../entities/task/model/tasksSlice'
