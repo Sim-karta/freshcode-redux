@@ -1,20 +1,10 @@
 import classNames from 'classnames'
 import { connect } from 'react-redux'
+
 import styles from './Todolist.module.scss'
+import { deleteTask, updateTask } from '../task/model/tasksSlice'
 
-const TodoList = ({ tasks }) => {
-  const handleDelete = id => {
-    setTasks(prev => prev.filter(task => task.id !== id))
-  }
-
-  const handleToggle = id => {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === id ? { ...task, isDone: !task.isDone } : task
-      )
-    )
-  }
-
+const TodoList = ({ tasks, deleteTaskById, updateTaskById }) => {
   const isOverdue = (deadline, isDone) => {
     if (isDone) {
       return false
@@ -45,7 +35,9 @@ const TodoList = ({ tasks }) => {
                 type='checkbox'
                 className={styles.checkbox}
                 checked={task.isDone}
-                onChange={() => handleToggle(task.id)}
+                onChange={({ target }) =>
+                  updateTaskById(task.id, { isDone: target.checked })
+                }
               />
               <span className={bodyClassNames}>{task.body}</span>
               <span className={deadlineClassNames}>({task.deadline})</span>
@@ -53,7 +45,7 @@ const TodoList = ({ tasks }) => {
 
             <button
               className={styles.deleteBtn}
-              onClick={() => handleDelete(task.id)}
+              onClick={() => deleteTaskById(task.id)}
             >
               Видалити
             </button>
@@ -66,4 +58,9 @@ const TodoList = ({ tasks }) => {
 
 const mapStateToProps = ({ tasksList }) => tasksList
 
-export default connect(mapStateToProps)(TodoList)
+const mapDispatchToProps = dispatch => ({
+  deleteTaskById: id => dispatch(deleteTask(id)),
+  updateTaskById: (id, body) => dispatch(updateTask({ id, body }))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoList)

@@ -21,9 +21,19 @@ const initialState = {
 const tasksSLice = createSlice({
   initialState,
   name: 'tasks',
-  reducers: {}
+  reducers: {
+    deleteTask: (state, { payload }) => {
+      state.tasks = state.tasks.filter(task => task.id !== payload)
+    },
+    updateTask: (state, { payload }) => {
+      const taskIndex = state.tasks.findIndex(task => task.id === payload.id)
+      state.tasks[taskIndex] = { ...state.tasks[taskIndex], ...payload.body }
+    }
+  }
 })
 
 const { reducer, actions } = tasksSLice
+
+export const { deleteTask, updateTask } = actions
 
 export default reducer
